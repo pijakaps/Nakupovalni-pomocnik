@@ -1,0 +1,1 @@
+from model import Stanje, Kategorija, Nakup, Izdelek 

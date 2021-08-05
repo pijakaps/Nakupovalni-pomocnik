@@ -1,5 +1,6 @@
 from datetime import date
 
+
 class Stanje:
     def __init__(self):
         self.kategorije = []
@@ -38,25 +39,33 @@ class Stanje:
     def zabelezi_izdelek(self, izdelek):
         self.aktualni_nakup.dodaj_izdelek(izdelek)
 
+
 class Nakup:
     def __init__(self):
         self.datum = date.today()
         self.kupljeni_izdelki = []
 
+    def __repr__(self):
+        return f"Nakup({self.datum})"
+
     def strosek(self):
         skupaj = 0
         for izdelek in self.kupljeni_izdelki:
             skupaj += izdelek.strosek_izdelka
-        return skupaj 
+        return skupaj
 
     def zabelezi_izdelek(self, izdelek):
         self.kupljeni_izdelki.append(izdelek)
+
 
 class Kategorija:
     def __init__(self, ime):
         self.ime = ime
         self.spisek_izdelkov = []
         self.potrebujem_izdelke = []
+
+    def __repr__(self):
+        return f"Kategorija({self.ime})"
 
     def dodaj_izdelek(self, izdelek):
         self.spisek_izdelkov.append(izdelek)
@@ -72,6 +81,7 @@ class Kategorija:
         self.potrebujem_izdelke.remove(izdelek)
         self.spisek_izdelkov.append(izdelek)
 
+
 class Izdelek:
     def __init__(self, ime, cena_na_kos, kolicina=0, kupljeno=False):
         self.ime = ime
@@ -86,7 +96,7 @@ class Izdelek:
         self.kolicina = kolicina
 
     def kupi(self):
-        self.kupljeno = True 
+        self.kupljeno = True
 
     def vrni_na_spisek(self):
         self.kolicina = 0
