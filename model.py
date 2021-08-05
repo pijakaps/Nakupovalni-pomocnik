@@ -42,11 +42,11 @@ class Stanje:
 
 class Nakup:
     def __init__(self):
-        self.datum = date.today()
+        self.ime = date.today()
         self.kupljeni_izdelki = []
 
     def __repr__(self):
-        return f"Nakup({self.datum})"
+        return f"Nakup({self.ime})"
 
     def strosek(self):
         skupaj = 0
