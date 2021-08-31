@@ -1,4 +1,5 @@
 from datetime import date
+import json
 
 
 class Stanje:
@@ -45,6 +46,53 @@ class Stanje:
     def zabelezi_izdelek(self, izdelek):
         self.aktualni_nakup.zabelezi_izdelek(izdelek)
 
+    def v_slovar(self):
+        return {
+            "kategorije": [kategorija.v_slovar() for kategorija in self.kategorije],
+            "aktualna_kategorija": self.kategorije.index(self.aktualna_kategorija)
+            if self.aktualna_kategorija
+            else None,
+            "nakupi": [nakup.v_slovar() for nakup in self.nakupi],
+            "aktualni_nakup": self.nakupi.index(self.aktualni_nakup)
+            if self.aktualni_nakup
+            else None,
+        }
+
+    @staticmethod
+    def iz_slovarja(slovar):
+        stanje = Stanje()
+        stanje.kategorije = [
+            Kategorija.iz_slovarja(sl_kategorije) for sl_kategorije in slovar["kategorije"]
+        ]
+        if slovar["aktualna_kategorija"] is not None:
+            stanje.aktualna_kategorija = stanje.kategorije[slovar["aktualna_kategorija"]]
+        stanje.nakupi = [
+            Nakup.iz_slovarja(sl_nakupa) for sl_nakupa in slovar["nakupi"]
+        ]
+        if slovar["aktualni_nakup"] is not None:
+            stanje.aktualni_nakup = stanje.nakupi[slovar["aktualni_nakup"]]
+        return stanje
+
+    def shrani_v_datoteko(self, ime_datoteke):
+        with open(ime_datoteke, "w") as dat:
+            slovar = self.v_slovar()
+            json.dump(slovar, dat)
+
+    @staticmethod
+    def preberi_iz_datoteke(ime_datoteke):
+        with open(ime_datoteke) as dat:
+            slovar = json.load(dat)
+            return Stanje.iz_slovarja(slovar)
+    
+    def preveri_podatke_nove_kategorije(self, ime):
+        napake = {}
+        if not ime:
+            napake["ime"] = "Ime mora biti neprazno."
+        for kategorija in self.kategorije:
+            if kategorija.ime == ime:
+                napake["ime"] = "Ime je že zasedeno."
+        return napake
+
 
 class Nakup:
     def __init__(self):
@@ -62,6 +110,20 @@ class Nakup:
 
     def zabelezi_izdelek(self, izdelek):
         self.kupljeni_izdelki.append(izdelek)
+
+    def v_slovar(self):
+        return {
+            "ime": self.ime,
+            "kupljeni_izdelki": [izdelek.v_slovar() for izdelek in self.kupljeni_izdelki],
+        }
+
+    @staticmethod
+    def iz_slovarja(slovar):
+        nakup = Nakup(slovar["ime"])
+        nakup.kupljeni_izdelki = [
+            Izdelek.iz_slovarja(sl_izdelki) for sl_izdelki in slovar["izdelki"]
+        ]
+        return nakup
 
 
 class Kategorija:
@@ -88,6 +150,20 @@ class Kategorija:
     def stevilo_potrebujem(self):
         return len(self.potrebujem)
 
+    def v_slovar(self):
+        return {
+            "ime": self.ime,
+            "izdelki": [izdelek.v_slovar() for izdelek in self.izdelki],
+        }
+
+    @staticmethod
+    def iz_slovarja(slovar):
+        kategorija = Kategorija(slovar["ime"])
+        kategorija.izdelki = [
+            Izdelek.iz_slovarja(sl_izdelka) for sl_izdelka in slovar["izdelki"]
+        ]
+        return kategorija
+
 
 class Izdelek:
     def __init__(self, ime, cena_na_kos, kolicina=0):
@@ -100,3 +176,18 @@ class Izdelek:
 
     def strosek_izdelka(self):
         return self.kolicina * self.cena
+
+    def v_slovar(self):
+        return {
+            "ime": self.ime,
+            "cena_na_kos": self.cena,
+            "količina": self.kolicina,
+        }
+
+    @staticmethod
+    def iz_slovarja(slovar):
+        return Izdelek(
+            slovar["ime"],
+            slovar["cena_na_kos"],
+            slovar["količina"],
+        )

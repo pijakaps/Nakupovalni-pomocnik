@@ -1,8 +1,12 @@
 from model import Stanje, Kategorija, Nakup, Izdelek
 from datetime import date
 
+IME_DATOTEKE = "stanje.json"
+try:
+    moj_model = Stanje.preberi_iz_datoteke(IME_DATOTEKE)
+except FileNotFoundError:
+    moj_model = Stanje()
 
-moj_model = Stanje()
 
 DODAJ_KATEGORIJO = 1
 POBRISI_KATEGORIJO = 2
@@ -46,13 +50,13 @@ def prikaz_kategorije(kategorija):
 
 def prikaz_izdelka(izdelek):
     if izdelek.kolicina == 0:
-        return f"{izdelek.ime} {izdelek.cena_na_kos} EUR"
+        return f"{izdelek.ime}; {izdelek.cena} EUR"
     else:
-        return f"{izdelek.ime} {izdelek.cena_na_kos} EUR ({izdelek.kolicina}x)"
+        return f"{izdelek.ime}; {izdelek.cena} EUR ({izdelek.kolicina}x)"
 
 
 def prikaz_nakupa(nakup):
-    return f"{nakup.ime}"
+    return f"{nakup.ime}: {nakup.strosek} EUR"
 
 
 def izberi_kategorijo(model):
@@ -81,6 +85,7 @@ def izberi_nakup(model):
         ]
     )
 
+
 def preberi_ceno():
     while True:
         vnos = input("Cena izdelka na kos> ")
@@ -88,6 +93,7 @@ def preberi_ceno():
             return int(vnos)
         except ValueError:
             print("Vnesti morate število.")
+
 
 def preberi_kolicino():
     while True:
@@ -132,6 +138,7 @@ def tekstovni_vmesnik():
         elif ukaz == KUPI_IZDELEK:
             kupi_izdelek()
         elif ukaz == IZHOD:
+            moj_model.shrani_v_datoteko(IME_DATOTEKE)
             print("Nasvidenje!")
             break
 
@@ -158,8 +165,9 @@ def dodaj_kategorijo():
     else:
         for kategorija in moj_model.kategorije:
             if kategorija.ime == ime:
-                print("Ta kategorija že obstaja, poskusite ustvariti novo.")
-                dodaj_kategorijo()
+                print(
+                    "Ta kategorija že obstaja, poskusite ustvariti drugo kategorijo ali storite kaj drugega.")
+                tekstovni_vmesnik()
             else:
                 pass
         nova_kategorija = Kategorija(ime)
@@ -198,8 +206,9 @@ def dodaj_izdelek():
     else:
         for izdelek in moj_model.aktualna_kategorija.izdelki:
             if izdelek.ime == ime:
-                print("Ta izdelek je že na vašem seznamu, poskusite dodati novega.")
-                dodaj_izdelek()
+                print(
+                    "Ta izdelek je že na vašem seznamu, poskusite dodati novega ali pa storite kaj drugega.")
+                tekstovni_vmesnik()
             else:
                 pass
         nov_izdelek = Izdelek(ime, cena_na_kos, kolicina)
@@ -208,7 +217,8 @@ def dodaj_izdelek():
 
 def pobrisi_izdelek():
     if moj_model.aktualna_kategorija.izdelki == []:
-        print("V tej kategoriji nimate zabeleženih nobenih izdelkov. Poskusite kaj drugega.")
+        print(
+            "V tej kategoriji nimate zabeleženih nobenih izdelkov. Poskusite kaj drugega.")
         tekstovni_vmesnik()
     else:
         izdelek = izberi_izdelek(moj_model)
@@ -235,20 +245,25 @@ def kupi_izdelek():
         potrebujem_izdelek()
     else:
         izdelek = izberi_izdelek(moj_model)
-        if moj_model.nakupi == []:
-            nakup = Nakup()
-            moj_model.dodaj_nakup(nakup)
-            moj_model.aktualni_nakup.zabelezi_izdelek(izdelek)
+        if izdelek not in moj_model.aktualna_kategorija.potrebujem:
+            print(
+                "Tega izdelka ne potrebujete, zato ga ne morete kupiti. Poskusite storiti kaj drugega.")
+            tekstovni_vmesnik()
         else:
-            moj_model.aktualni_nakup = moj_model.nakupi[-1]
-            if moj_model.aktualni_nakup.ime == date.today():
-                moj_model.aktualni_nakup.zabelezi_izdelek(izdelek)
-            else:
+            if moj_model.nakupi == []:
                 nakup = Nakup()
                 moj_model.dodaj_nakup(nakup)
-                moj_model.aktualni_nakup = nakup
                 moj_model.aktualni_nakup.zabelezi_izdelek(izdelek)
-        izdelek.kolicina = 0
+            else:
+                moj_model.aktualni_nakup = moj_model.nakupi[-1]
+                if moj_model.aktualni_nakup.ime == date.today():
+                    moj_model.aktualni_nakup.zabelezi_izdelek(izdelek)
+                else:
+                    nakup = Nakup()
+                    moj_model.dodaj_nakup(nakup)
+                    moj_model.aktualni_nakup = nakup
+                    moj_model.aktualni_nakup.zabelezi_izdelek(izdelek)
+            izdelek.kolicina = 0
 
 
 tekstovni_vmesnik()
