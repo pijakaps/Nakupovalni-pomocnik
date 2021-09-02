@@ -1,0 +1,108 @@
+% rebase('base.html')
+
+<nav class="level">
+    <div class="level-left">
+        <form method="POST" action="/zamenjaj-aktualno-kategorijo/">
+            <div class="buttons has-addons field is-horizontal">
+                % for indeks, kategorija in enumerate(kategorije):
+                % if kategorija == aktualna_kategorija:
+                <button class="button is-primary is-selected" name="indeks" value="{{indeks}}">
+                    {{kategorija.ime}}
+                    <span class="tag is-rounded">{{kategorija.stevilo_potrebujem()}}</span>
+                </button>
+                % else:
+                <button class="button" name="indeks" value="{{indeks}}">
+                    {{kategorija.ime}}
+                    <span class="tag is-rounded">{{kategorija.stevilo_potrebujem()}}</span>
+                </button>
+                % end
+                % end
+            </div>
+        </form>
+
+    </div>
+
+    <div class="level-right">
+        <form>
+            <div class="level-item">
+                <a class="button is-info" href="/dodaj-kategorijo/">dodaj kategorijo</a>
+            </div>
+        </form>
+    </div>
+</nav>
+
+% if aktualna_kategorija:
+
+<table class="table is-hoverable is-fullwidth">
+    <thead>
+        <tr>
+            <form method="POST" action="/dodaj/">
+                <td></td>
+                <td>
+                    <div class="control has-icons-left">
+                        <input class="input is-small" type="text" name="ime" placeholder="ime">
+                        <span class="icon is-small is-left">
+                            <i class="far fa-clipboard-list"></i>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <div class="control has-icons-left">
+                        <input class="input is-small" type="text" name="cena na kos" placeholder="cena">
+                        <span class="icon is-small is-left">
+                            <i class="far fa-euro-sign"></i>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <div class="control">
+                        <button class="button is-info is-small">dodaj</button>
+                    </div>
+                </td>
+            </form>
+        </tr>
+    </thead>
+    <tbody>
+        % for indeks, izdelek in enumerate(izdelki):
+        <tr>
+            <td>
+                <form method="POST" action="/potrebujem/">
+                    <input type="hidden" name="indeks" value="{{indeks}}">
+                    <button class="button is-white">
+                        <span class="icon is-small">
+                            % if opravilo.opravljeno:
+                            <i class="far fa-check-square"></i>
+                            % else:
+                            <i class="far fa-square"></i>
+                            % end
+                        </span>
+                    </button>
+                </form>
+            </td>
+            <td>
+                <form method="POST" action="/kupi/">
+                    <input type="hidden" name="indeks" value="{{indeks}}">
+                    <button class="button is-white">
+                        <span class="icon is-small">
+                            % if opravilo.opravljeno:
+                            <i class="far fa-check-square"></i>
+                            % else:
+                            <i class="far fa-square"></i>
+                            % end
+                        </span>
+                    </button>
+                </form>
+            </td>
+            <td>{{ izdelek.ime }}</td>
+            <td>{{ izdelek.cena }}</td>
+            <td>{{ izdelek.kolicina }}</td>
+            <td></td>
+        </tr>
+        % end
+    </tbody>
+</table>
+
+% else:
+
+<p>Nimate še nobene kategorije. <a href="/dodaj-kategorijo/">Dodajte jo!</a></p>
+    
