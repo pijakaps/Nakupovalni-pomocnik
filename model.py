@@ -114,7 +114,7 @@ class Nakup:
 
     def v_slovar(self):
         return {
-            "ime": self.ime,
+            "ime": date.isoformat(self.ime),
             "kupljeni_izdelki": [izdelek.v_slovar() for izdelek in self.kupljeni_izdelki],
         }
 
@@ -147,6 +147,15 @@ class Kategorija:
 
     def kupi_izdelek(self, izdelek):
         self.potrebujem.remove(izdelek)
+
+    def strosek(self):
+        skupaj = 0
+        for izdelek in self.izdelki:
+            if izdelek.kolicina != 0:
+                skupaj += izdelek.strosek_izdelka()
+            else:
+                pass
+        return skupaj
 
     def stevilo_potrebujem(self):
         potrebujem = 0

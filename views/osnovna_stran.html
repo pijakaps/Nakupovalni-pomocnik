@@ -7,13 +7,15 @@
                 % for indeks, kategorija in enumerate(kategorije):
                 % if kategorija == aktualna_kategorija:
                 <button class="button is-primary is-selected" name="indeks" value="{{indeks}}">
-                    {{kategorija.ime}} 
                     <span class="tag is-rounded"> {{kategorija.stevilo_potrebujem()}} </span>
+                    {{kategorija.ime}} 
+                    <span class="tag is-squared"> {{kategorija.strosek()}} EUR </span>
                 </button>
                 % else:
                 <button class="button" name="indeks" value="{{indeks}}">
-                    {{kategorija.ime}} 
                     <span class="tag is-rounded"> {{kategorija.stevilo_potrebujem()}} </span>
+                    {{kategorija.ime}} 
+                    <span class="tag is-squared"> {{kategorija.strosek()}} EUR </span>
                 </button>
                 % end
                 % end
@@ -69,7 +71,7 @@
             <td>
                 <i class="fas fa-arrow-right"></i>
             </td>
-            <td>{{ izdelek.ime }}</td>
+            <td><strong>{{ izdelek.ime }}</strong></td>
             <td>{{ izdelek.cena }} EUR</td>
             <td>{{ izdelek.kolicina }} x</td>
             <td>{{ izdelek.strosek_izdelka() }} EUR</td>
