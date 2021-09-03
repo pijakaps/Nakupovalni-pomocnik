@@ -28,7 +28,7 @@ class Stanje:
 
     def potrebujem_izdelek(self, izdelek):
         self.aktualna_kategorija.potrebujem_izdelek(izdelek)
-    
+
     def kupi_izdelek(self, izdelek):
         self.aktualna_kategorija.kupi_izdelek(izdelek)
 
@@ -83,14 +83,15 @@ class Stanje:
         with open(ime_datoteke) as dat:
             slovar = json.load(dat)
             return Stanje.iz_slovarja(slovar)
-    
+
     def preveri_podatke_nove_kategorije(self, ime):
         napake = {}
         if not ime:
             napake["ime"] = "Ime mora biti neprazno."
-        for kategorija in self.kategorije:
-            if kategorija.ime == ime:
-                napake["ime"] = "Ime je že zasedeno."
+        else:
+            for kategorija in self.kategorije:
+                if kategorija.ime == ime:
+                    napake["ime"] = "Ime je že zasedeno."
         return napake
 
 
@@ -130,7 +131,7 @@ class Kategorija:
     def __init__(self, ime):
         self.ime = ime
         self.izdelki = []
-        self.potrebujem =[]
+        self.potrebujem = []
 
     def __repr__(self):
         return f"Kategorija({self.ime})"
@@ -140,15 +141,21 @@ class Kategorija:
 
     def izbrisi_izdelek(self, izdelek):
         self.izdelki.remove(izdelek)
-    
+
     def potrebujem_izdelek(self, izdelek):
         self.potrebujem.append(izdelek)
-    
+
     def kupi_izdelek(self, izdelek):
         self.potrebujem.remove(izdelek)
 
     def stevilo_potrebujem(self):
-        return len(self.potrebujem)
+        potrebujem = 0
+        for izdelek in self.izdelki:
+            if izdelek.kolicina != 0:
+                potrebujem += 1
+            else:
+                pass
+        return potrebujem
 
     def v_slovar(self):
         return {
