@@ -8,18 +8,17 @@
                 % if kategorija == aktualna_kategorija:
                 <button class="button is-primary is-selected" name="indeks" value="{{indeks}}">
                     {{kategorija.ime}}
-                    <span class="tag is-rounded">{{kategorija.stevilo_potrebujem()}}</span>
+                    <span class="tag is-rounded"> {{kategorija.stevilo_potrebujem()}} </span>
                 </button>
                 % else:
                 <button class="button" name="indeks" value="{{indeks}}">
                     {{kategorija.ime}}
-                    <span class="tag is-rounded">{{kategorija.stevilo_potrebujem()}}</span>
+                    <span class="tag is-rounded"> {{kategorija.stevilo_potrebujem()}} </span>
                 </button>
                 % end
                 % end
             </div>
         </form>
-
     </div>
 
     <div class="level-right">
@@ -40,17 +39,17 @@
                 <td></td>
                 <td>
                     <div class="control has-icons-left">
-                        <input class="input is-small" type="text" name="ime" placeholder="ime">
+                        <input class="input is-small" type="text" name="ime" placeholder="ime izdelka">
                         <span class="icon is-small is-left">
-                            <i class="far fa-clipboard-list"></i>
+                            <i class="fas fa-clipboard-list"></i>
                         </span>
                     </div>
                 </td>
                 <td>
                     <div class="control has-icons-left">
-                        <input class="input is-small" type="text" name="cena na kos" placeholder="cena">
+                        <input class="input is-small" type="text" name="cena" placeholder="cena na kos">
                         <span class="icon is-small is-left">
-                            <i class="far fa-euro-sign"></i>
+                            <i class="fas fa-euro-sign"></i>
                         </span>
                     </div>
                 </td>
@@ -63,40 +62,52 @@
         </tr>
     </thead>
     <tbody>
+
         % for indeks, izdelek in enumerate(izdelki):
         <tr>
+            % if izdelek.kolicina != 0:
             <td>
-                <form method="POST" action="/potrebujem/">
-                    <input type="hidden" name="indeks" value="{{indeks}}">
-                    <button class="button is-white">
-                        <span class="icon is-small">
-                            % if opravilo.opravljeno:
-                            <i class="far fa-check-square"></i>
-                            % else:
-                            <i class="far fa-square"></i>
-                            % end
-                        </span>
-                    </button>
-                </form>
+                <i class="fas fa-arrow-right"></i>
             </td>
+            <td>{{ izdelek.ime }}</td>
+            <td>{{ izdelek.cena }} EUR</td>
+            <td>{{ izdelek.kolicina }} x</td>
             <td>
                 <form method="POST" action="/kupi/">
                     <input type="hidden" name="indeks" value="{{indeks}}">
-                    <button class="button is-white">
-                        <span class="icon is-small">
-                            % if opravilo.opravljeno:
-                            <i class="far fa-check-square"></i>
-                            % else:
-                            <i class="far fa-square"></i>
-                            % end
-                        </span>
-                    </button>
+                    <button class="button is-info is-small">KUPI</button>
                 </form>
             </td>
-            <td>{{ izdelek.ime }}</td>
-            <td>{{ izdelek.cena }}</td>
-            <td>{{ izdelek.kolicina }}</td>
             <td></td>
+            % else:
+            <td>
+                <i class="fas fa-arrow-right"></i>
+            </td>
+            <td>{{ izdelek.ime }}</td>
+            <td>{{ izdelek.cena }} EUR</td>
+            <td>
+                <p>Tega izdelka trenutno ne potrebujete.</p>
+            </td>
+            <td>
+                <form method="POST" action="/potrebujem/">
+                    <input type="hidden" name="indeks" value="{{indeks}}">
+            <td>
+                <div class="control has-icons-left">
+                    <input class="input is-small" type="text" name="kolicina" placeholder="količina">
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-clipboard-check"></i>
+                    </span>
+                </div>
+            </td>
+            <td>
+                <div class="control">
+                    <button class="button is-info is-small">potrebujem</button>
+                </div>
+            </td>
+            </form>
+            </td>
+            <td></td>
+            %end
         </tr>
         % end
     </tbody>
@@ -104,5 +115,6 @@
 
 % else:
 
-<p>Nimate še nobene kategorije. <a href="/dodaj-kategorijo/">Dodajte jo!</a></p>
-    
+<p>Nimate še nobene kategorije. Poskusite jo dodati <a href="/dodaj-kategorijo/">tukaj.</a></p>
+
+% end
