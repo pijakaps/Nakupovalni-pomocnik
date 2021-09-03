@@ -7,12 +7,12 @@
                 % for indeks, kategorija in enumerate(kategorije):
                 % if kategorija == aktualna_kategorija:
                 <button class="button is-primary is-selected" name="indeks" value="{{indeks}}">
-                    {{kategorija.ime}}
+                    {{kategorija.ime}} 
                     <span class="tag is-rounded"> {{kategorija.stevilo_potrebujem()}} </span>
                 </button>
                 % else:
                 <button class="button" name="indeks" value="{{indeks}}">
-                    {{kategorija.ime}}
+                    {{kategorija.ime}} 
                     <span class="tag is-rounded"> {{kategorija.stevilo_potrebujem()}} </span>
                 </button>
                 % end
@@ -72,6 +72,7 @@
             <td>{{ izdelek.ime }}</td>
             <td>{{ izdelek.cena }} EUR</td>
             <td>{{ izdelek.kolicina }} x</td>
+            <td>{{ izdelek.strosek_izdelka() }} EUR</td>
             <td>
                 <form method="POST" action="/kupi/">
                     <input type="hidden" name="indeks" value="{{indeks}}">
@@ -91,20 +92,20 @@
             <td>
                 <form method="POST" action="/potrebujem/">
                     <input type="hidden" name="indeks" value="{{indeks}}">
-            <td>
-                <div class="control has-icons-left">
-                    <input class="input is-small" type="text" name="kolicina" placeholder="količina">
-                    <span class="icon is-small is-left">
-                        <i class="fas fa-clipboard-check"></i>
-                    </span>
-                </div>
-            </td>
-            <td>
-                <div class="control">
-                    <button class="button is-info is-small">potrebujem</button>
-                </div>
-            </td>
-            </form>
+                    <td>
+                        <div class="control has-icons-left">
+                            <input class="input is-small" type="text" name="kolicina" placeholder="količina">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-clipboard-check"></i>
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="control">
+                            <button class="button is-info is-small">potrebujem</button>
+                        </div>
+                    </td>
+                </form>
             </td>
             <td></td>
             %end
