@@ -1,7 +1,6 @@
 import bottle
 import os
-from datetime import date
-from model import Stanje, Kategorija, Nakup, Izdelek
+from model import Stanje, Kategorija, Izdelek
 
 
 def nalozi_uporabnikovo_stanje():
