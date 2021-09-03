@@ -3,6 +3,7 @@ import os
 from datetime import date
 from model import Stanje, Kategorija, Nakup, Izdelek
 
+
 def nalozi_uporabnikovo_stanje():
     uporabnisko_ime = bottle.request.get_cookie("uporabnisko_ime")
     if uporabnisko_ime:
@@ -40,9 +41,11 @@ def registracija_post():
         napake = {"uporabnisko_ime": "Uporabniško ime že obstaja."}
         return bottle.template("registracija.html", napake=napake, polja={"uporabnisko_ime": uporabnisko_ime}, uporabnisko_ime=None)
     else:
-        bottle.response.set_cookie("uporabnisko_ime", uporabnisko_ime, path="/")
+        bottle.response.set_cookie(
+            "uporabnisko_ime", uporabnisko_ime, path="/")
         Stanje().shrani_v_datoteko(uporabnisko_ime)
         bottle.redirect("/")
+
 
 @bottle.get("/prijava/")
 def prijava_get():
@@ -56,7 +59,8 @@ def prijava_post():
         napake = {"uporabnisko_ime": "Uporabniško ime ne obstaja."}
         return bottle.template("prijava.html", napake=napake, polja={"uporabnisko_ime": uporabnisko_ime}, uporabnisko_ime=None)
     else:
-        bottle.response.set_cookie("uporabnisko_ime", uporabnisko_ime, path="/")
+        bottle.response.set_cookie(
+            "uporabnisko_ime", uporabnisko_ime, path="/")
         bottle.redirect("/")
 
 
@@ -70,9 +74,9 @@ def odjava_post():
 @bottle.post("/dodaj/")
 def dodaj_izdelek():
     ime = bottle.request.forms.getunicode("ime")
-    cena = bottle.request.forms.getunicode("cena")
-    izdelek = Izdelek(ime, cena)
+    cena = int(bottle.request.forms.getunicode("cena"))
     stanje = nalozi_uporabnikovo_stanje()
+    izdelek = Izdelek(ime, cena)
     stanje.dodaj_izdelek(izdelek)
     shrani_uporabnikovo_stanje(stanje)
     bottle.redirect("/")
@@ -86,27 +90,18 @@ def dodaj_kategorijo_get():
 
 @bottle.post("/dodaj-kategorijo/")
 def dodaj_kategorijo_post():
+    uporabnisko_ime = bottle.request.forms.getunicode("uporabnisko_ime")
     ime = bottle.request.forms.getunicode("ime")
     polja = {"ime": ime}
     stanje = nalozi_uporabnikovo_stanje()
     napake = stanje.preveri_podatke_nove_kategorije(ime)
     if napake:
-        return bottle.template("dodaj_kategorijo.html", napake=napake, polja=polja)
+        return bottle.template("dodaj_kategorijo.html", napake=napake, polja=polja, uporabnisko_ime=uporabnisko_ime)
     else:
         kategorija = Kategorija(ime)
         stanje.dodaj_kategorijo(kategorija)
         shrani_uporabnikovo_stanje(stanje)
         bottle.redirect("/")
-
-
-@bottle.post("/zamenjaj-opravljeno/")
-def zamenjaj_opravljeno():
-    indeks = bottle.request.forms.getunicode("indeks")
-    stanje = nalozi_uporabnikovo_stanje()
-    opravilo = stanje.aktualni_spisek.opravila[int(indeks)]
-    opravilo.zamenjaj_opravljeno()
-    shrani_uporabnikovo_stanje(stanje)
-    bottle.redirect("/")
 
 
 @bottle.post("/zamenjaj-aktualno-kategorijo/")
@@ -116,6 +111,26 @@ def zamenjaj_aktualno_kategorijo():
     stanje = nalozi_uporabnikovo_stanje()
     kategorija = stanje.kategorije[int(indeks)]
     stanje.aktualna_kategorija = kategorija
+    shrani_uporabnikovo_stanje(stanje)
+    bottle.redirect("/")
+
+
+@bottle.post("/potrebujem/")
+def potrebujem():
+    indeks = bottle.request.forms.getunicode("indeks")
+    stanje = nalozi_uporabnikovo_stanje()
+    izdelek = stanje.aktualna_kategorija.izdelki[int(indeks)]
+    izdelek.kolicina = int(bottle.request.forms.getunicode("kolicina"))
+    shrani_uporabnikovo_stanje(stanje)
+    bottle.redirect("/")
+
+
+@bottle.post("/kupi/")
+def kupi():
+    indeks = bottle.request.forms.getunicode("indeks")
+    stanje = nalozi_uporabnikovo_stanje()
+    izdelek = stanje.aktualna_kategorija.izdelki[int(indeks)]
+    izdelek.kolicina = 0
     shrani_uporabnikovo_stanje(stanje)
     bottle.redirect("/")
 
